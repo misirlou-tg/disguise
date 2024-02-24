@@ -1,0 +1,20 @@
+name: disguise
+
+services:
+  # nginx mounts two volumes:
+  # - disguise/docs (where the compiled version of the Angular app is)
+  # - conf.d (contains default.conf which proxies calls to the mbtest container)
+  web:
+    image: nginx:1.25.4-alpine3.18
+    ports:
+      - "80:80"
+    volumes:
+      - "../docs:/usr/share/nginx/html:ro"
+      - "./conf.d:/etc/nginx/conf.d:ro"
+  mbtest:
+    image: bbyars/mountebank:2.9.1
+    # port 2525 is exposed by the image (not exposed externally)
+    # Add ports here for imposters that will be created
+    ports:
+      - "8080:8080"
+    command: start
