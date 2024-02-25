@@ -1,16 +1,28 @@
 name: disguise
 
+# Docker volume that has the compiled Angular app (optional, see web, volumes below)
+volumes:
+  disguise-vol:
+    name: disguise-master
+    external: true
+
 services:
-  # nginx mounts two volumes:
-  # - disguise/docs (where the compiled version of the Angular app is)
-  # - conf.d (contains default.conf which proxies calls to the mbtest container)
+  # Two volumes are mounted in nginx:
+  # - /etc/nginx/conf.d, ./conf.d will be mounted there
+  #   Contains default.conf which proxies calls to the mbtest container
+  # - /usr/share/nginx/html - The compiled Angular app
+  #   See below, can mount the volume in disguise-vol above or ../docs
   web:
     image: nginx:1.25.4-alpine3.18
     ports:
       - "80:80"
     volumes:
-      - "../docs:/usr/share/nginx/html:ro"
       - "./conf.d:/etc/nginx/conf.d:ro"
+      # This line mounts a docker volume with the compiled Angular app
+      - disguise-vol:/usr/share/nginx/html:ro
+      # This line mounts the current compiled app in the git workspace docs folder
+      #- "../docs:/usr/share/nginx/html:ro"
+
   mbtest:
     image: bbyars/mountebank:2.9.1
     # port 2525 is exposed by the image (not exposed externally)
