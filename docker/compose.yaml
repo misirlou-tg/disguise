@@ -3,7 +3,7 @@ name: disguise
 # Docker volume that has the compiled Angular app (optional, see web, volumes below)
 volumes:
   disguise-vol:
-    name: disguise-master
+    name: ${DISGUISE_VOL:-disguise-master}
     external: true
 
 services:
