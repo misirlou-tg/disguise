@@ -45,9 +45,9 @@
           <label for='recordFalse'>False</label>  
         </div>
         <div class="col-md-2">
-          <input class='mr-1' type="radio" name='mutualAuth' id='mutualTrue' formControlName="mutualAuth" value="true">
+          <input class='mr-1' type="radio" name='mutualAuth' id='mutualTrue' formControlName="mutualAuth" [value]="true">
           <label for='mutualTrue'>True</label>
-          <input class='ml-2 mr-1' type="radio" name='mutualAuth' id='mutualFalse'  formControlName="mutualAuth" value="false" checked>
+          <input class='ml-2 mr-1' type="radio" name='mutualAuth' id='mutualFalse'  formControlName="mutualAuth" [value]="false" checked>
           <label for='mutualFalse'>False</label>
         </div>
       </div>

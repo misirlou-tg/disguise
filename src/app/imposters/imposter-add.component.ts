@@ -27,7 +27,7 @@ export class ImposterAddComponent implements OnInit {
             recordRequests: false,
             key: '',
             cert: '',
-            mutualAuth: '',
+            mutualAuth: false,
             defaultResponse: [null, [this.validateJson]],
             stubs: [null, [this.validateJson]],
             endOfRequestResolver: [null, [this.validateJson]]
