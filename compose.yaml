@@ -1,0 +1,15 @@
+name: disguise
+
+services:
+  web:
+    image: disguise:latest
+    ports:
+      - "80:80"
+
+  mbtest:
+    image: bbyars/mountebank:2.9.1
+    # port 2525 is exposed by the image (not exposed externally)
+    # Add ports here for imposters that will be created
+    ports:
+      - "8080:8080"
+    command: start
