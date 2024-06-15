@@ -41,6 +41,10 @@ export class ImposterDetailComponent implements OnInit {
 
     ngOnInit(): void {
         this.port = +this.route.snapshot.paramMap.get('port');
+        this.loadImposter();
+    }
+
+    loadImposter(): void {
         if (this.port) {
             this.getImposter(this.port);
         }
@@ -138,7 +142,8 @@ export class ImposterDetailComponent implements OnInit {
     }
 
     windowReload(): void {
-        window.location.reload();
+        this.minimizedImposter = [];
+        this.loadImposter();
     }
 
     getStub(port: number, index: number): void {
