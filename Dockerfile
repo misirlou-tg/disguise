@@ -8,8 +8,8 @@ RUN ./init-and-build.sh
 # This is the version used during development
 FROM nginx:1.25.4-alpine3.18
 
-# Copy over the nginx config file and the compiled Angular app
-COPY nginx/* /etc/nginx/conf.d/
+# Copy over the nginx config file template and the compiled Angular app
+COPY nginx/* /etc/nginx/templates/
 COPY --from=build /home/node/app/docs /usr/share/nginx/html
 
 EXPOSE 80

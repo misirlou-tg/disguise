@@ -12,7 +12,12 @@ server {
 
     # proxy endpoints that begin with this to mbtest
     location /api/ {
-        proxy_pass http://mbtest:2525/;
+        # If nginx fails to start with the error: unknown "mbtest_url" variable
+        # it is because an environment variable MBTEST_URL must exist
+        #
+        # Would like to use an nginx var here to supply a default but...
+        # proxy_pass doesn't allow variables
+        proxy_pass ${MBTEST_URL};
     }
 
     error_page  404              /404.html;

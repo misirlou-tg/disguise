@@ -3,6 +3,8 @@ name: disguise
 services:
   web:
     image: disguise:latest
+    environment:
+      MBTEST_URL: "http://mbtest:2525/"
     ports:
       - "80:80"
 
