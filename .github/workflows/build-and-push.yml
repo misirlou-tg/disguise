@@ -13,23 +13,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build job
-  build:
+  build-push:
     runs-on: ubuntu-latest
     steps:
-      # Checkout & setup pages
+      # Checkout & set image tag based on the commit hash
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Test, test, test
-        run: |
-          ls -l
-          docker --version
-      - name: Get short git commit hash
+      - name: Set env.IMAGE_TAG for our docker hub repo
+        # https://dev.to/hectorleiva/github-actions-and-creating-a-short-sha-hash-8b7
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          echo "Short hash: $calculatedSha"
-
-  # Push job
-#  push:
-#    needs: build
-#    runs-on: ubuntu-latest
+          echo "IMAGE_TAG=misirloutg/disguise:$calculatedSha" >> $GITHUB_ENV
+          echo "Will build and push" ${{ env.IMAGE_TAG }}
+      - name: Test, test, test
+        run: echo ${{ env.IMAGE_TAG }}
