@@ -23,7 +23,8 @@ jobs:
         # https://dev.to/hectorleiva/github-actions-and-creating-a-short-sha-hash-8b7
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          echo "IMAGE_TAG=misirloutg/disguise:$calculatedSha" >> $GITHUB_ENV
-          echo "Will build and push" ${{ env.IMAGE_TAG }}
+          imageTag=misirloutg/disguise:$calculatedSha
+          echo "Will build and push" $imageTag
+          echo "IMAGE_TAG=$imageTag" >> $GITHUB_ENV
       - name: Test, test, test
         run: echo ${{ env.IMAGE_TAG }}
