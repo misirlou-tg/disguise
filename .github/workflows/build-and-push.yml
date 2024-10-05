@@ -24,7 +24,14 @@ jobs:
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
           imageTag=misirloutg/disguise:$calculatedSha
-          echo "Will build and push" $imageTag
+          echo "IMAGE_TAG=$imageTag"
           echo "IMAGE_TAG=$imageTag" >> $GITHUB_ENV
+      # Build and push the image
+      - name: Build and push
+        id: build_push
+        uses: docker/build-push-action@v6
+        with:
+          #push: true
+          tags: ${{ env.IMAGE_TAG }}
       - name: Test, test, test
-        run: echo ${{ env.IMAGE_TAG }}
+        run: echo "imageId:" ${{ steps.build_push.outputs.imageId }}
