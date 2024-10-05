@@ -15,6 +15,10 @@ name: build-and-push
 #
 
 on:
+  # Runs on pushes targeting master
+  push:
+    branches:
+      - master
   # Allows the ability to run this workflow manually from the Actions tab
   workflow_dispatch:
 
