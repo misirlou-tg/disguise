@@ -1,0 +1,35 @@
+name: build-and-push
+
+on:
+  # Allows the ability to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Allow one concurrent deployment
+concurrency:
+  group: "push-docker-hub"
+  cancel-in-progress: true
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout & setup pages
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Test, test, test
+        run: |
+          ls -l
+          docker --version
+      - name: Get short git commit hash
+        run: |
+          calculatedSha=$(git rev-parse --short ${{ github.sha }})
+          echo "Short hash: $calculatedSha"
+
+  # Push job
+#  push:
+#    needs: build
+#    runs-on: ubuntu-latest
