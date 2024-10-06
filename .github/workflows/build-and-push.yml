@@ -1,6 +1,26 @@
 name: build-and-push
 
+#
+# This uses Docker's GitHub Actions to build and push the image to our Docker Hub repo:
+# https://docs.docker.com/build/ci/github-actions/
+#
+# Also some information in the actions' GitHub repo:
+# https://github.com/docker/login-action
+# https://github.com/docker/build-push-action
+#
+# Note: This workflow requires that the Docker Hub username & a personal
+# access token (PAT) are configured in GitHub for the repository:
+# - Repostory var: DOCKERHUB_USERNAME
+# - Repostiory secret: DOCKERHUB_TOKEN
+#
+
 on:
+  # Runs on pushes targeting master
+  push:
+    branches:
+      - master
+  # Pull requests
+  pull_request:
   # Allows the ability to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -13,23 +33,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build job
-  build:
+  build-push:
     runs-on: ubuntu-latest
     steps:
-      # Checkout & setup pages
+      # Checkout & set image tag based on the commit hash
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Test, test, test
+      - name: Set push operation
+        id: set-push
         run: |
-          ls -l
-          docker --version
-      - name: Get short git commit hash
+          if [ '${{ github.event_name }}' = 'pull_request' ]; then
+            echo "PR workflow, only building image"
+            echo "doPush=false" >> $GITHUB_OUTPUT
+          else
+            echo "Other workflow, build and push image"
+            echo "doPush=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Set env.IMAGE_TAG for our docker hub repo
+        # https://dev.to/hectorleiva/github-actions-and-creating-a-short-sha-hash-8b7
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          echo "Short hash: $calculatedSha"
-
-  # Push job
-#  push:
-#    needs: build
-#    runs-on: ubuntu-latest
+          imageTag=${{ vars.DOCKERHUB_USERNAME }}/disguise:$calculatedSha
+          echo "IMAGE_TAG=$imageTag"
+          echo "IMAGE_TAG=$imageTag" >> $GITHUB_ENV
+      # Login to Docker Hub
+      - name: Login to Docker Hub
+        if: steps.set-push.outputs.doPush == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Build and push the image
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: ${{ steps.set-push.outputs.doPush == 'true' }}
+          tags: ${{ env.IMAGE_TAG }}
