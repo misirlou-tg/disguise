@@ -5,9 +5,34 @@ server {
 
     #access_log  /var/log/nginx/host.access.log  main;
 
+    # Found this solution for serving up an Angular app where we want to make
+    # sure index.html is not cached by browsers. The solution also uses try_files,
+    # which we were not using before, which makes it nicer for users because a URL
+    # like "http://<host>/logs" will actually respond with index.html and Angular
+    # will start on the Logs page. Previously this would have resulted in a 404.
+    #
+    # Note that I moved the root directive to the server level so that it is
+    # not repeated for the three location directives.
+    #
+    # https://nginx.org/en/docs/http/ngx_http_core_module.html#location
+    # https://stackoverflow.com/questions/41631399/disable-caching-of-a-single-file-with-try-files-directive
+
+    root /usr/share/nginx/html;
+
+    location = / {
+        add_header Cache-Control no-cache;
+        expires 0;
+        try_files /index.html =404;
+    }
+
     location / {
-        root   /usr/share/nginx/html;
-        index  index.html;
+        try_files $uri @index;
+    }
+
+    location @index {
+        add_header Cache-Control no-cache;
+        expires 0;
+        try_files /index.html =404;
     }
 
     # proxy endpoints that begin with this to mbtest
