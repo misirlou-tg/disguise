@@ -39,7 +39,8 @@ jobs:
       # Checkout & set image tag based on the commit hash
       - name: Checkout repository
         uses: actions/checkout@v4
-      - run: echo '## Build and Push summary' >> "$GITHUB_STEP_SUMMARY"
+      - name: Starting step summary
+        run: echo '## Build and Push summary' >> "$GITHUB_STEP_SUMMARY"
       - name: Set push operation
         id: set-push
         run: |
@@ -57,7 +58,8 @@ jobs:
           imageTag=${{ vars.DOCKERHUB_USERNAME }}/disguise:$calculatedSha
           echo "IMAGE_TAG=$imageTag"
           echo "IMAGE_TAG=$imageTag" >> "$GITHUB_ENV"
-      - run: |
+      - name: Adding step summary
+        run: |
           echo 'Building image with tag: `${{ env.IMAGE_TAG }}`' >> "$GITHUB_STEP_SUMMARY"
           echo 'Performing push: ${{ steps.set-push.outputs.doPush }}' >> "$GITHUB_STEP_SUMMARY"
       # Login to Docker Hub
