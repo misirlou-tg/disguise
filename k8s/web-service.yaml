@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  annotations:
+    # Note, this specifies internal because we want the load balancer to be created
+    # in a private subnet
+    # https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+    #
+    # Addendum: This annotation requires the AWS Load Balancer Controller and has been
+    # deprecated, for the latest annotations to use see:
+    # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/service/annotations/
+    #
+    # Also, the subnets must be tagged so the controller can "discover" them:
+    # https://repost.aws/knowledge-center/eks-vpc-subnet-discovery
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80

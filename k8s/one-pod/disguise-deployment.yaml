@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: disguise-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: misirloutg/disguise:59c8b02
+          ports:
+            - containerPort: 80
+          env:
+            - name: MBTEST_URL
+              value: http://127.0.0.1:2525/
+        - name: mbtest
+          image: bbyars/mountebank:2.9.1
+          ports:
+            - containerPort: 2525

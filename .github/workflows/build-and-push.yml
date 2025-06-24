@@ -39,15 +39,17 @@ jobs:
       # Checkout & set image tag based on the commit hash
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Starting step summary
+        run: echo '## Build and Push summary' >> "$GITHUB_STEP_SUMMARY"
       - name: Set push operation
         id: set-push
         run: |
           if [ '${{ github.event_name }}' = 'pull_request' ]; then
             echo "PR workflow, only building image"
-            echo "doPush=false" >> $GITHUB_OUTPUT
+            echo "doPush=false" >> "$GITHUB_OUTPUT"
           else
             echo "Other workflow, build and push image"
-            echo "doPush=true" >> $GITHUB_OUTPUT
+            echo "doPush=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Set env.IMAGE_TAG for our docker hub repo
         # https://dev.to/hectorleiva/github-actions-and-creating-a-short-sha-hash-8b7
@@ -55,7 +57,11 @@ jobs:
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
           imageTag=${{ vars.DOCKERHUB_USERNAME }}/disguise:$calculatedSha
           echo "IMAGE_TAG=$imageTag"
-          echo "IMAGE_TAG=$imageTag" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$imageTag" >> "$GITHUB_ENV"
+      - name: Adding step summary
+        run: |
+          echo 'Building image with tag: `${{ env.IMAGE_TAG }}`' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Performing push: ${{ steps.set-push.outputs.doPush }}' >> "$GITHUB_STEP_SUMMARY"
       # Login to Docker Hub
       - name: Login to Docker Hub
         if: steps.set-push.outputs.doPush == 'true'
