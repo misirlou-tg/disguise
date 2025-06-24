@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: misirloutg/disguise:59c8b02
+          ports:
+            - containerPort: 80
+          env:
+            - name: MBTEST_URL
+              value: http://mbtest-service:2525/
