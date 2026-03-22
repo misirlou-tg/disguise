@@ -36,6 +36,11 @@ jobs:
   build-push:
     runs-on: ubuntu-latest
     name: 🔨 Build and Push to Docker Hub
+
+    env:
+      DOCKER_REPO: ${{ vars.DOCKERHUB_USERNAME }}/disguise
+      # IMAGE_TAG will also be available (added in one of the steps)
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v6
@@ -59,9 +64,9 @@ jobs:
         # https://dev.to/hectorleiva/github-actions-and-creating-a-short-sha-hash-8b7
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          imageTag=${{ vars.DOCKERHUB_USERNAME }}/disguise:$calculatedSha
-          echo "IMAGE_TAG=$imageTag"
-          echo "IMAGE_TAG=$imageTag" >> "$GITHUB_ENV"
+          imageTag=${DOCKER_REPO}:${calculatedSha}
+          echo "IMAGE_TAG=${imageTag}"
+          echo "IMAGE_TAG=${imageTag}" >> "$GITHUB_ENV"
 
       - name: 📝 Adding step summary
         run: |
@@ -81,4 +86,6 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: ${{ steps.set-push.outputs.doPush == 'true' }}
-          tags: ${{ env.IMAGE_TAG }}
+          tags: |
+            ${{ env.IMAGE_TAG }}
+            ${{ github.ref == 'refs/heads/master' && format('{0}:latest', env.DOCKER_REPO) || '' }}
